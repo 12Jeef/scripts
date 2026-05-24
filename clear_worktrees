@@ -1,0 +1,15 @@
+#!/Library/Frameworks/Python.framework/Versions/3.10/bin/python3
+
+import os
+import subprocess
+
+result = subprocess.run(["git", "branch"], cwd=os.getcwd(), capture_output=True)
+
+result_str = result.stdout.decode("utf-8")
+
+branches = [line.strip() for line in result_str.split("\n")]
+for branch in branches:
+  if branch.startswith("worktree-"):
+    subprocess.run(["git", "branch", "-D", branch])
+  if branch.startswith("+"):
+    subprocess.run(["git", "worktree", "remove", branch[1:].strip(), "--force"])

@@ -1,0 +1,5 @@
+echo "Importing code into $1 from $2 in year $3"
+
+frc_import_lib $1 $2
+cp -R $2/src/main/java/com/peninsula/frc$3/constants/* $1/src/main/java/com/peninsula/frc$3/constants/
+cp -R $2/src/main/java/com/peninsula/frc$3/CurrentRobot.java $1/src/main/java/com/peninsula/frc$3/

@@ -1,0 +1,9 @@
+echo "Importing lib into $1 from $2"
+
+cp -R $2/src/main/java/com/peninsula/lib/* $1/src/main/java/com/peninsula/lib/
+cp -R $2/src/main/deploy/* $1/src/main/deploy/
+cp -R $2/src/test/* $1/src/test/
+rm $1/vendordeps/*
+cp -R $2/vendordeps/* $1/vendordeps/
+cp $2/build.gradle $1/build.gradle
+cp $2/settings.gradle $1/settings.gradle
