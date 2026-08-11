@@ -1,0 +1,81 @@
+#!/Library/Frameworks/Python.framework/Versions/3.10/bin/python3
+
+import os
+
+categories = ["Art", "Robotics", "Tech", "Whole"]
+category_files = {category: [] for category in categories}
+
+root = os.path.expanduser('~/Downloads')
+
+for file in os.listdir(root):
+  if not os.path.isfile(os.path.join(root, file)):
+    continue
+  if not file.startswith("Resume - "):
+    continue
+  parts = file.split(".")
+  if len(parts) != 2:
+    print(f"NEAR MATCH, len(parts) != 2: {file}")
+    continue
+  if parts[1] != "pdf":
+    print(f"NEAR MATCH, parts[-1] != 'pdf': {file}")
+    continue
+  category = parts[0][len("Resume - "):]
+  parts = category.split(" ")
+  if len(parts) <= 0:
+    print(f"NEAR MATCH, len(parts) <= 0: {file}")
+    continue
+  if len(parts) > 2:
+    print(f"NEAR MATCH, len(parts) > 2: {file}")
+    continue
+  category = parts[0]
+  if category not in categories:
+    print(f"NEAR MATCH, category not in categories: {file}")
+    continue
+  if len(parts) == 1:
+    print(f"MATCH: {category}, 0={file}")
+    category_files[category].append((0, file))
+    continue
+  index = parts[1]
+  if len(index) < 3:
+    print(f"NEAR MATCH, len(index) < 3: {file}")
+    continue
+  if index[0] != "(":
+    print(f"NEAR MATCH, index[0] != '(': {file}")
+    continue
+  if index[-1] != ")":
+    print(f"NEAR MATCH, index[-1] != ')': {file}")
+    continue
+  index = index[1:-1]
+  try:
+    index = int(index)
+  except Exception as e:
+    print(f"NEAR MATCH, int(index) error {e}: {file}")
+    continue
+  print(f"MATCH: {category}, {index}={file}")
+  category_files[category].append((index, file))
+
+print("==== CATEGORIES ====")
+for category in categories:
+  print(f"{category}:")
+  category_files[category].sort(key=lambda v: v[0], reverse=True)
+  for (index, file) in category_files[category]:
+    print(f"  {index}= {file}")
+
+print("Are you sure you want to rename latest copies and clear non-latest copies?")
+yn = input("Y/N > ").lower()
+if yn != "y":
+  exit(0)
+
+for category in categories:
+  files = category_files[category]
+  if len(files) <= 0:
+    continue
+  for _, file in files[1:]:
+    print(f"Removing {file}...")
+    os.unlink(os.path.join(root, file))
+  _, file = files[0]
+  file_ex = f"Resume - {category}.pdf"
+  if file == file_ex:
+    continue
+  print(f"Renaming {file} -> {file_ex}...")
+  os.rename(os.path.join(root, file), os.path.join(root, file_ex))
